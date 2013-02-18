@@ -21,7 +21,7 @@ The resulting console.history:
 Recent history can then be bundled with error reports.
 Generating this console.history array is the point of this library.
 
-Don't care about 'caller:names'? `console.options.addCaller(false)`
+Don't care about `caller:names`? `console.options.addCaller(false)`
 
 ### Function naming:
 If you don't name your functions (or use coffeescript), I include
@@ -29,7 +29,9 @@ the first 40 characters of the function's .toString value.
 Change the 40 char snippit length with: console.options.functionSnippetLength(30)
 
 ### Track calls to alert:
-`historicalConsole(function(console, alert) {`
+```javascript
+historicalConsole(function(console, alert) {
+```
 
 ### Globally intercept console calls:
 ```javascript
@@ -40,9 +42,11 @@ historicalConsole(function(console) {
 
 caller:null means a function was called at the global scope (no function called it)
 
-### `historicalConsole.noConflict`
+### historicalConsole.noConflict
 To play it super safe:
-`myModule.historicalConsole = historicalConsole.noConflict();`
+```javascript
+myModule.historicalConsole = historicalConsole.noConflict();
+```
 
 TODO:
 console.dir, profile, and profileEnd
