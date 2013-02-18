@@ -48,6 +48,16 @@ To play it super safe:
 myModule.historicalConsole = historicalConsole.noConflict();
 ```
 
+### Integrate with other things:
+Override console.history.push with your own callback!
+```javascript
+historicalConsole(function(console) {
+  console.history.push = function consoleHistoryCallback(args) {
+    //~whateva ya want bro~
+  };
+})();
+```
+
 TODO:
 console.dir, profile, and profileEnd
 
