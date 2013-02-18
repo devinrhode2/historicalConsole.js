@@ -1,8 +1,6 @@
 /*
-
 historicalConsole.js
 Docs: github.com/devinrhode2/historicalConsole.js
-
 */
 
 
