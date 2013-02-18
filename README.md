@@ -29,18 +29,20 @@ the first 40 characters of the function's .toString value.
 Change the 40 char snippit length with: console.options.functionSnippetLength(30)
 
 ### Track calls to alert:
-historicalConsole(function(console, alert) {
+`historicalConsole(function(console, alert) {`
 
 ### Globally intercept console calls:
+```javascript
 historicalConsole(function(console) {
   window.console = console;
 });
+```
 
 caller:null means a function was called at the global scope (no function called it)
 
-### historicalConsole.noConflict
+### `historicalConsole.noConflict`
 To play it super safe:
-myModule.historicalConsole = historicalConsole.noConflict();
+`myModule.historicalConsole = historicalConsole.noConflict();`
 
 TODO:
 console.dir, profile, and profileEnd
