@@ -1,6 +1,6 @@
 /*
-historicalConsole.js
-Docs: github.com/devinrhode2/historicalConsole.js
+ historicalConsole.js
+ Docs: github.com/devinrhode2/historicalConsole.js
 */
 
 
@@ -35,7 +35,9 @@ if (window.ie == null) {
      * takes a method string like 'log' 'error' 'warn' and the rest
      * and returns a function which calls console[method] and logs to history
      *
-     * exposed since it's useful externally
+     * exposed since it's useful externally.
+     * This code is essentially the code for console.* methods, ignoring any saveHooks
+     * Example values might be: 'log', nativeConsole.log
      */
     generateConsoleMethod: function console_generateConsoleMethod(method, nativeMethod, saveHook) {
       return function () { //I fear errors in oldIE, so I'm not naming this function..
