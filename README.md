@@ -1,4 +1,1 @@
-historicalConsole.js
-====================
-
-jk
+Docs at top of file
