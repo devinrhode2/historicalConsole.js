@@ -16,7 +16,7 @@ if (window.ie == null) {
     while (
       div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
       all[0]
-    ){};
+    ){}
 
     return v > 4 ? v : undef;
   }());
@@ -68,7 +68,7 @@ if (window.ie == null) {
           }
         }
   
-        console.history.push(args);
+        console.history.add(args);
       };
     },
   
@@ -158,6 +158,7 @@ if (window.ie == null) {
       }
     },
     
+    //depends on: console.warn
     generateOptionFunction: function console_generateOptionFunction(optionKey) {
       return function (value) { //I fear errors in oldIE, so I'm not naming this function..
         if (value === undefined) {
@@ -179,6 +180,19 @@ if (window.ie == null) {
     options: {}
   };
 
+  // *********************************
+  // ** CONSOLE.HISTORTY SIZE LIMIT **
+  // *********************************
+  console.history.add = function console_history_add(logStatement) {
+    this.push(logStatement);
+    if (console.history.length > internalOptions.consoleHistoryMaxLength) {
+      console.history.shift();
+    }
+  };
+
+  // *********************************
+  // ** CONSOLE.* METHOD GENERATION **
+  // *********************************
   var method;
   var methods = [
     'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
@@ -211,7 +225,8 @@ if (window.ie == null) {
   // *************
   var internalOptions = {
     addCaller: true,
-    functionSnippetLength: 40
+    functionSnippetLength: 40,
+    consoleHistoryMaxLength: 200
   };
   for (var option in internalOptions) {
     if (internalOptions.hasOwnProperty(option)) {
