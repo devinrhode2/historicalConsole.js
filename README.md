@@ -40,7 +40,7 @@ historicalConsole(function(console) {
 });
 ```
 
-caller:null means a function was called at the global scope (no function called it)
+`caller:null` means a function was called at the global scope (no function called it)
 
 ### historicalConsole.noConflict
 To play it super safe:
@@ -49,13 +49,24 @@ myModule.historicalConsole = historicalConsole.noConflict();
 ```
 
 ### Integrate with other things:
-Override console.history.push with your own callback!
+Override `console.history.add` with your own callback!
+This function is called whenever any `console.*` method is called.
+For example, when you call `console.log('foo')`, `console.history.add` will be called with this one argument:
+```
+['log', 'foo', 'caller:someFunc']
+```
+Maybe you want to receive all entries and do something interesting wtih them:
 ```javascript
 historicalConsole(function(console) {
-  console.history.push = function consoleHistoryCallback(args) {
-    //~whateva ya want bro~
+  console.history.add = function consoleHistoryCallback(logStatement) {
+    //~whateva you want bro~ 
   };
 })();
+```
+
+The `console.history` array will not exceed 200 entries, or whatever maximum you set:
+```javascript
+console.options.consoleHistoryMaxLength(100);
 ```
 
 TODO:
