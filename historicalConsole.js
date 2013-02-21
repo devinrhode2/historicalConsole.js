@@ -181,7 +181,7 @@ if (window.ie == null) {
   };
 
   // *********************************
-  // ** CONSOLE.HISTORTY SIZE LIMIT **
+  // ** CONSOLE.HISTORY SIZE LIMIT **
   // *********************************
   console.history.add = function console_history_add(logStatement) {
     this.push(logStatement);
