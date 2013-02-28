@@ -5,7 +5,9 @@
 
 
 //a few global things:
-if (window.ie == null) {
+//typeof window in case we're in node.
+//==null because it could be falsey zero
+if (typeof window !== 'undefined' && window.ie == null) {
   window.ie = (function() {
     /*jshint boss:true, asi: true, expr: true, latedef: true */
     var undef,
@@ -39,6 +41,7 @@ if (window.ie == null) {
      * This code is essentially the code for console.* methods, ignoring any saveHooks
      * Example values might be: 'log', nativeConsole.log
      */
+    //this.generateConsoleMethod
     generateConsoleMethod: function console_generateConsoleMethod(method, nativeMethod, saveHook) {
       return function () { //I fear errors in oldIE, so I'm not naming this function..
         if (nativeMethod) {
@@ -71,7 +74,8 @@ if (window.ie == null) {
         console.history.add(args);
       };
     },
-  
+    
+    //historicalConsole.resolveFunctionName
     resolveFunctionName: function console_resolveFunctionName(func) {
       if (!func) {
         return 'null'; //null is when there is not caller (global scope)
@@ -91,6 +95,7 @@ if (window.ie == null) {
       return func.name || toString.substring(0, internalOptions.functionSnippetLength);
     },
 
+    //this.history
     history: [],
     //we don't do console.history = console.history || []
     //because we don't want to inherit other history from another party
@@ -102,6 +107,7 @@ if (window.ie == null) {
   
     // saveHooks modify arguments before being saved to console.history
     // the return values are the modified args
+    //historicalConsole.saveHooks
     saveHooks: {
       assert: function console_saveHook_assert(isOk, message) {
         return ['Assertion ' + (isOk ? 'successful' : 'failed') + ': ' + message];
@@ -159,6 +165,7 @@ if (window.ie == null) {
     },
     
     //depends on: console.warn
+    //this.generateOptionFunction
     generateOptionFunction: function console_generateOptionFunction(optionKey) {
       return function (value) { //I fear errors in oldIE, so I'm not naming this function..
         if (value === undefined) {
@@ -183,6 +190,7 @@ if (window.ie == null) {
   // *********************************
   // ** CONSOLE.HISTORY SIZE LIMIT **
   // *********************************
+  //this.history.add
   console.history.add = function console_history_add(logStatement) {
     this.push(logStatement);
     if (console.history.length > internalOptions.consoleHistoryMaxLength) {
@@ -203,6 +211,7 @@ if (window.ie == null) {
   var length = methods.length;
   while (length--) {
     method = methods[length];
+    // this[method] = this.generateConsoleMethod
     console[method] = console.generateConsoleMethod(
       method,
       nativeConsole[method] || nativeConsole.log,
@@ -213,6 +222,7 @@ if (window.ie == null) {
   }
 
   //can't put this in method list because I don't know a clean way to pass in window.alert
+  // this.alert
   console.alert = console.generateConsoleMethod('alert', window.alert,
    function console_alert_saveHook(message) {
     if (window.onuncaughtException) {
@@ -223,6 +233,7 @@ if (window.ie == null) {
   // *************
   // ** OPTIONS **
   // *************
+  //this.internalOptions
   var internalOptions = {
     addCaller: true,
     functionSnippetLength: 40,
@@ -237,7 +248,7 @@ if (window.ie == null) {
   function historicalConsole(fn) {
   
     //validate callback:
-    if (Object.prototype.toString.call(fn) !== '[object Function]' ||
+    if (Object.prototype.toString.call(fn) != '[object Function]' ||
         arguments.length !== 1 ||
         fn.length !== 1)
     {
@@ -258,10 +269,10 @@ if (window.ie == null) {
       try {
         fn(console);
       } catch (e) {
-        if (window.onuncaughtException) {
-          window.onuncaughtException(e);
+        if (typeof onuncaughtException !== 'undefined') { //probably window.onuncaughtError but maybe not. you can var over it
+          onuncaughtException(e);
         } else {
-          console.warn(
+          this.console && console.warn && console.warn(
             'You should define a window.onuncaughtException handler for exceptions,' +
             ' or use a library like Sheild.js'
           );
