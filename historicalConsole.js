@@ -28,6 +28,9 @@ if (typeof window !== 'undefined' && window.ie == null) {
 // Can't do this because we use Function.caller
 //'use strict';
 
+  var _oldHistoricalConsole = window.historicalConsole;
+  window.historicalConsole = historicalConsole;
+
   function historicalConsole(fn) {
   
     //validate callback:
@@ -53,7 +56,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
         fn(console);
       } catch (e) {
         if (typeof onuncaughtException !== 'undefined') { //probably window.onuncaughtError but maybe not. you can var over it
-          onuncaughtException(e);
+          onuncaughtException(e); //this function can choose to re-throw or not, anyone's choice
         } else {
           console.warn(
             'You should define a window.onuncaughtException handler for exceptions,' +
@@ -67,97 +70,93 @@ if (typeof window !== 'undefined' && window.ie == null) {
     };
   }
 
-  //add this to parent historicalConsole since it's common among every instantiated console
-  //a 'class' method. prototypes could be used,
-  //but I don't think we could do that and have a big clean var console = {...}, which is fast for interpreters
-  historicalConsole.resolveFunctionName: function historicalConsole_resolveFunctionName(func) {
-    if (!func) {
-      return 'null'; //null is when there is not caller (global scope)
-    }
-    var toString = func.toString()
-                    .substring(0, 250) //so the regex doesn't become a performance hog
-                    .replace(/\s+/g, ' ');
-    //collapse excess whitespace so function snippits for
-    //non-named functions are more much more informative
-
-    if (window.ie) {
-      func.name = toString
-                     //all chars be 'function' and '(' (if there are no chars, then '')
-                    .substring(8, toString.indexOf('(', 8)) 
-                    .replace(/^\s+|\s+$/g,''); //'function (){' => ' ' becomes the falsey ''
-    }
-    return func.name || toString.substring(0, internalOptions.functionSnippetLength);
-  };
-
-  // Big thanks to @NV for console.js: github.com/NV/console.js
-  // saveHooks modify arguments before being saved to console.history
-  // the return values are the modified args
-  //historicalConsole.saveHooks
-  historicalConsole.saveHooks = {
-    assert: function console_saveHook_assert(isOk, message) {
-      return ['Assertion ' + (isOk ? 'successful' : 'failed') + ': ' + message];
-    },
-    count: (function() {
-      var counters = {};
-      return function console_saveHook_count(title) {
-        if (!title) {
-          //this is the *key* to counters, not the *value*
-          title = Math.floor((Math.random() * 100000) + 1).toString();
-        }
-        if (counters[title]) {
-          counters[title]++;
-        } else {
-          counters[title] = 1;
-        }
-        return title + ' ' + counters[title];
-      };
-    })(),
-    /*
-    //stringifyArguments/_source_of(argument)
-    //https://github.com/eriwen/javascript-stacktrace/blob/master/stacktrace.js#L272-L300
-    //https://github.com/NV/console.js/blob/gh-pages/console.js#L70-L131
-    dir: function console_saveHook_dir() {
-      var result = [];
-      for (var i = 0; i < arguments.length; i++) {
-        result.push(console._source_of(arguments[i], console.dimensions_limit, []));
+  //Instead of of continually changing the structure of historicalConsole with each method,
+  //we'll assign one static method hash to the prototype! (fast for interpreters)
+  //We add these methods to parent historicalConsole object since it's common among every instantiated console
+  historicalConsole.prototype = {
+    resolveFunctionName: function historicalConsole_resolveFunctionName(func) {
+      if (!func) {
+        return 'null'; //null is when there is not caller (global scope)
       }
-      return result.join(console._args_separator);
-    },
-    */
-    /*
-    //try to glean something from jsperf:
-    profile: function console_saveHook_profile() {
-    },
-    profileEnd: function console_saveHook_profileEnd() {
-    },
-    */
-    time: function console_saveHook_time(name) {
-      if (name === undefined) {
-        throw new Error('console.time needs a title for your timing like console.time(\'lookup\')');
+      var toString = func.toString()
+                      .substring(0, 250) //so the regex doesn't become a performance hog
+                      .replace(/\s+/g, ' ');
+      //collapse excess whitespace so function snippits for
+      //non-named functions are more much more informative
+
+      if (window.ie) {
+        func.name = toString
+                       //all chars be 'function' and '(' (if there are no chars, then '')
+                      .substring(8, toString.indexOf('(', 8)) 
+                      .replace(/^\s+|\s+$/g,''); //'function (){' => ' ' becomes the falsey ''
       }
-      startTimes[name] = (new Date()).getTime();
-      return [name];
+      return func.name || toString.substring(0, internalOptions.functionSnippetLength);
+    }
+    // Big thanks to @NV for console.js: github.com/NV/console.js
+    // saveHooks modify arguments before being saved to console.history
+    // the return values are the modified args
+    saveHooks: {
+      assert: function console_saveHook_assert(isOk, message) {
+        return ['Assertion ' + (isOk ? 'successful' : 'failed') + ': ' + message];
+      },
+      count: (function() {
+        var counters = {};
+        return function console_saveHook_count(title) {
+          if (!title) {
+            //this is the *key* to counters, not the *value*
+            title = Math.floor((Math.random() * 100000) + 1).toString();
+          }
+          if (counters[title]) {
+            counters[title]++;
+          } else {
+            counters[title] = 1;
+          }
+          return title + ' ' + counters[title];
+        };
+      })(),
+      /*
+      //stringifyArguments/_source_of(argument)
+      //https://github.com/eriwen/javascript-stacktrace/blob/master/stacktrace.js#L272-L300
+      //https://github.com/NV/console.js/blob/gh-pages/console.js#L70-L131
+      dir: function console_saveHook_dir() {
+        var result = [];
+        for (var i = 0; i < arguments.length; i++) {
+          result.push(console._source_of(arguments[i], console.dimensions_limit, []));
+        }
+        return result.join(console._args_separator);
+      },
+      */
+      /*
+      //try to glean something from jsperf:
+      profile: function console_saveHook_profile() {
+      },
+      profileEnd: function console_saveHook_profileEnd() {
+      },
+      */
+      time: function console_saveHook_time(name) {
+        if (name === undefined) {
+          throw new Error('console.time needs a title for your timing like console.time(\'lookup\')');
+        }
+        startTimes[name] = (new Date()).getTime();
+        return [name];
+      },
+      timeEnd: function console_saveHook_timeEnd(name) {
+        return [(name + ': ' + ((new Date()).getTime() - startTimes[name]) + 'ms')];
+      },
+      timeStamp: function console_saveHook_timeStamp(optionalLabel) {
+        return [(new Date()).getTime(), optionalLabel];
+      },
+      trace: function console_saveHook_trace() {
+        return [/*counter?*/ (new Error('console.trace()')).stack || 'stack traces not supported'];
+      }
     },
-    timeEnd: function console_saveHook_timeEnd(name) {
-      return [(name + ': ' + ((new Date()).getTime() - startTimes[name]) + 'ms')];
-    },
-    timeStamp: function console_saveHook_timeStamp(optionalLabel) {
-      return [(new Date()).getTime(), optionalLabel];
-    },
-    trace: function console_saveHook_trace() {
-      return [/*counter?*/ (new Error('console.trace()')).stack || 'stack traces not supported'];
+  
+    noConflict: function historicalConsole_noConflict() {
+      window.historicalConsole = _oldHistoricalConsole;
+      trackAction('noConflict');
+      return historicalConsole;
     }
   };
-
-  historicalConsole.noConflict = function historicalConsole_noConflict() {
-    window.historicalConsole = _oldHistoricalConsole;
-    trackAction('noConflict');
-    return historicalConsole;
-  };
-  var _oldHistoricalConsole = window.historicalConsole;
-  window.historicalConsole = historicalConsole;
-
-  //--Done with `historicalConsole`--
 
   var nativeConsole = window.console;
 
