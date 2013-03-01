@@ -31,12 +31,16 @@ if (typeof window !== 'undefined' && window.ie == null) {
   var _oldHistoricalConsole = window.historicalConsole;
   window.historicalConsole = historicalConsole;
 
-  function historicalConsole(fn) {
-  
+  function historicalConsole(fn, optionalName) {
+
+    if (optionalName && historicalConsole[optionalName]) {
+      return 'names not supported quite yet';
+      //return historicalConsole[optionalName];
+    }
+
     //validate callback:
     if (Object.prototype.toString.call(fn) != '[object Function]' ||
-        arguments.length !== 1 ||
-        fn.length !== 1)
+        arguments.length !== 1 || fn.length !== 1)
     {
       var message = 'historicalConsole expects one function argument like this: ' +
                     'historicalConsole(function(console){/*your whole program*/});';
@@ -47,6 +51,12 @@ if (typeof window !== 'undefined' && window.ie == null) {
 
     //returning a function allows for more flexible use of `historicalConsole`
     return function historicalConsoleClosure() {
+      if (arguments.length > 0) {
+        console.warn(
+          'The function returned from historicalConsole does not take arguments. ' +
+          'These arguments will be ignored. You\'re probably doing something wrong'
+        );
+      }
       //override global console temporarily so that console.* calls from externals
       //are logged too. This could be developer feedback from external libraries
       //regarding the callbacks use of that library
