@@ -28,8 +28,6 @@ if (typeof window !== 'undefined' && window.ie == null) {
 // Can't do this because we use Function.caller
 //'use strict';
 
-  var nativeConsole = window.console;
-
   function historicalConsole(fn) {
   
     //validate callback:
@@ -57,7 +55,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
         if (typeof onuncaughtException !== 'undefined') { //probably window.onuncaughtError but maybe not. you can var over it
           onuncaughtException(e);
         } else {
-          this.console && console.warn && console.warn(
+          console.warn(
             'You should define a window.onuncaughtException handler for exceptions,' +
             ' or use a library like Sheild.js'
           );
@@ -150,6 +148,18 @@ if (typeof window !== 'undefined' && window.ie == null) {
       return [/*counter?*/ (new Error('console.trace()')).stack || 'stack traces not supported'];
     }
   };
+
+  historicalConsole.noConflict = function historicalConsole_noConflict() {
+    window.historicalConsole = _oldHistoricalConsole;
+    trackAction('noConflict');
+    return historicalConsole;
+  };
+  var _oldHistoricalConsole = window.historicalConsole;
+  window.historicalConsole = historicalConsole;
+
+  //--Done with `historicalConsole`--
+
+  var nativeConsole = window.console;
 
   //declare as many console properties and methods upfront for optimization
   var console = {
@@ -260,10 +270,11 @@ if (typeof window !== 'undefined' && window.ie == null) {
 
   //can't put this in method list because I don't know a clean way to pass in window.alert
   // this.alert
-  console.alert = console.generateConsoleMethod('alert', window.alert,
-   function console_alert_saveHook(message) {
-    if (window.onuncaughtException) {
-      window.onuncaughtException(new Error(message));
+  console.alert = console.generateConsoleMethod('alert', window.alert, function console_alert_saveHook(message) {
+    if (typeof onuncaughtException !== 'undefined') {
+      onuncaughtException(new Error(message));
+    } else {
+     console.warn('You should define a window.onuncaughtException handler or use a library like Shield.js')
     }
   });
 
@@ -281,15 +292,6 @@ if (typeof window !== 'undefined' && window.ie == null) {
       console.options[option] = console.generateOptionFunction(option);
     }
   }
-
-
-  historicalConsole.noConflict = function historicalConsole_noConflict() {
-    window.historicalConsole = _oldHistoricalConsole;
-    trackAction('noConflict');
-    return historicalConsole;
-  };
-  var _oldHistoricalConsole = window.historicalConsole;
-  window.historicalConsole = historicalConsole;
 
   //things nobody cares about:
   var startTimes = {}; //for console.time
