@@ -34,7 +34,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
   function historicalConsole(fn, optionalName) {
 
     if (optionalName && historicalConsole[optionalName]) {
-      return 'names not supported quite yet';
+      //names not supported quite yet
       //return historicalConsole[optionalName];
     }
 
