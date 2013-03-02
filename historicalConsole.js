@@ -80,6 +80,8 @@ if (typeof window !== 'undefined' && window.ie == null) {
     };
   }
 
+  var now = (Date.now ? Date.now : (new Date).getTime);
+
   //Instead of of continually changing the structure of historicalConsole with each method,
   //we'll assign one static method hash to the prototype! (fast for interpreters)
   //We add these methods to parent historicalConsole object since it's common among every instantiated console
@@ -147,14 +149,14 @@ if (typeof window !== 'undefined' && window.ie == null) {
         if (name === undefined) {
           throw new Error('console.time needs a title for your timing like console.time(\'lookup\')');
         }
-        startTimes[name] = (new Date()).getTime();
+        startTimes[name] = now();
         return [name];
       },
       timeEnd: function console_saveHook_timeEnd(name) {
-        return [(name + ': ' + ((new Date()).getTime() - startTimes[name]) + 'ms')];
+        return [(name + ': ' + (now() - startTimes[name]) + 'ms')];
       },
       timeStamp: function console_saveHook_timeStamp(optionalLabel) {
-        return [(new Date()).getTime(), optionalLabel];
+        return [now(), optionalLabel];
       },
       trace: function console_saveHook_trace() {
         return [/*counter?*/ (new Error('console.trace()')).stack || 'stack traces not supported'];
