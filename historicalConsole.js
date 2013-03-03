@@ -80,7 +80,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
     };
   }
 
-  var now = (Date.now ? Date.now : (new Date).getTime);
+  var now = (Date.now ? Date.now : (new Date()).getTime);
 
   //Instead of of continually changing the structure of historicalConsole with each method,
   //we'll assign one static method hash to the prototype! (fast for interpreters)
@@ -103,7 +103,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
                       .replace(/^\s+|\s+$/g,''); //'function (){' => ' ' becomes the falsey ''
       }
       return func.name || toString.substring(0, internalOptions.functionSnippetLength);
-    }
+    },
     // Big thanks to @NV for console.js: github.com/NV/console.js
     // saveHooks modify arguments before being saved to console.history
     // the return values are the modified args
@@ -285,7 +285,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
     if (typeof onuncaughtException !== 'undefined') {
       onuncaughtException(new Error(message));
     } else {
-     console.warn('You should define a window.onuncaughtException handler or use a library like Shield.js')
+     console.warn('You should define a window.onuncaughtException handler or use a library like Shield.js');
     }
   });
 
