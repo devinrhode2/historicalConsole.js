@@ -20,6 +20,7 @@ The resulting console.history:
 ```
 Recent history can then be bundled with error reports.
 Generating this console.history array is the point of this library.
+If you're using Shield js, you call `Shield` in place of `historicalConsole` - so anything that holds for the `console` here of course holds for the console you get there.
 
 Don't care about `caller:names`? `console.options.addCaller(false)`
 
