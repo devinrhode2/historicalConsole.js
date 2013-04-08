@@ -31,12 +31,14 @@ if (typeof window !== 'undefined' && window.ie == null) {
   var _oldHistoricalConsole = window.historicalConsole;
   window.historicalConsole = historicalConsole;
 
-  function historicalConsole(fn, optionalName) {
+  function historicalConsole(fn/*, optionalName*/ {
 
+    /*
     if (optionalName && historicalConsole[optionalName]) {
       //names not supported quite yet
       //return historicalConsole[optionalName];
     }
+    */
 
     //validate callback:
     if (Object.prototype.toString.call(fn) != '[object Function]' ||
