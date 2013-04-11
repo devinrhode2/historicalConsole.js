@@ -70,6 +70,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
         if (typeof onuncaughtException !== 'undefined') { //probably window.onuncaughtError but maybe not. you can var over it
           onuncaughtException(e); //this function can choose to re-throw or not, anyone's choice
         } else {
+          
           console.warn(
             'You should define a window.onuncaughtException handler for exceptions,' +
             ' or use a library like Sheild.js'
@@ -208,9 +209,10 @@ if (typeof window !== 'undefined' && window.ie == null) {
             //try to addCaller - separate from above because it may not succeed
             args.push('caller:' + historicalConsole.resolveFunctionName(arguments.callee.caller));
           } catch (e) {
+            internalOptions.addCaller = false;
             console.warn(
               'SOMEBODY made a global \'use strict\'; statement. ' +
-              'Sheild.js cannot include the caller of this function in strict mode'
+              'The caller cannot be included in history for log calls in strict mode. Turning feature off'
             );
           }
         }
