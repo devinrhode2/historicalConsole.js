@@ -82,7 +82,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
     };
   }
 
-  var now = (Date.now ? Date.now : (new Date()).getTime);
+  var now = (Date.now ? (function(){ return Date.now() }) : (function(){ return new Date().getTime }));
 
   //Instead of of continually changing the structure of historicalConsole with each method,
   //we'll assign one static method hash to the prototype! (fast for interpreters)
