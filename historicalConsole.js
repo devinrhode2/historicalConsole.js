@@ -31,7 +31,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
   var _oldHistoricalConsole = window.historicalConsole;
   window.historicalConsole = historicalConsole;
 
-  function historicalConsole(fn/*, optionalName*/ {
+  function historicalConsole(fn/*, optionalName*/) {
 
     /*
     if (optionalName && historicalConsole[optionalName]) {
@@ -82,7 +82,7 @@ if (typeof window !== 'undefined' && window.ie == null) {
     };
   }
 
-  var now = (Date.now ? (function(){ return Date.now() }) : (function(){ return new Date().getTime }));
+  var now = (Date.now ? (function(){ return Date.now(); }) : (function(){ return new Date().getTime; }));
 
   //Instead of of continually changing the structure of historicalConsole with each method,
   //we'll assign one static method hash to the prototype! (fast for interpreters)
@@ -106,69 +106,69 @@ if (typeof window !== 'undefined' && window.ie == null) {
       }
       return func.name || toString.substring(0, internalOptions.functionSnippetLength);
     },
-    // Big thanks to @NV for console.js: github.com/NV/console.js
-    // saveHooks modify arguments before being saved to console.history
-    // the return values are the modified args
-    saveHooks: {
-      assert: function console_saveHook_assert(isOk, message) {
-        return ['Assertion ' + (isOk ? 'successful' : 'failed') + ': ' + message];
-      },
-      count: (function() {
-        var counters = {};
-        return function console_saveHook_count(title) {
-          if (!title) {
-            //this is the *key* to counters, not the *value*
-            title = Math.floor((Math.random() * 100000) + 1).toString();
-          }
-          if (counters[title]) {
-            counters[title]++;
-          } else {
-            counters[title] = 1;
-          }
-          return title + ' ' + counters[title];
-        };
-      })(),
-      /*
-      //stringifyArguments/_source_of(argument)
-      //https://github.com/eriwen/javascript-stacktrace/blob/master/stacktrace.js#L272-L300
-      //https://github.com/NV/console.js/blob/gh-pages/console.js#L70-L131
-      dir: function console_saveHook_dir() {
-        var result = [];
-        for (var i = 0; i < arguments.length; i++) {
-          result.push(console._source_of(arguments[i], console.dimensions_limit, []));
-        }
-        return result.join(console._args_separator);
-      },
-      */
-      /*
-      //try to glean something from jsperf:
-      profile: function console_saveHook_profile() {
-      },
-      profileEnd: function console_saveHook_profileEnd() {
-      },
-      */
-      time: function console_saveHook_time(name) {
-        if (name === undefined) {
-          throw new Error('console.time needs a title for your timing like console.time(\'lookup\')');
-        }
-        startTimes[name] = now();
-        return [name];
-      },
-      timeEnd: function console_saveHook_timeEnd(name) {
-        return [(name + ': ' + (now() - startTimes[name]) + 'ms')];
-      },
-      timeStamp: function console_saveHook_timeStamp(optionalLabel) {
-        return [now(), optionalLabel];
-      },
-      trace: function console_saveHook_trace() {
-        return [/*counter?*/ (new Error('console.trace()')).stack || 'stack traces not supported'];
-      }
-    },
-  
     noConflict: function historicalConsole_noConflict() {
       window.historicalConsole = _oldHistoricalConsole;
       trackAction('noConflict');
       return historicalConsole;
+    }
+  };
+
+  historicalConsole.saveHooks = {
+    // Big thanks to @NV for console.js: github.com/NV/console.js
+    // saveHooks modify arguments before being saved to console.history
+    // the return values are the modified args
+    assert: function console_saveHook_assert(isOk, message) {
+      return ['Assertion ' + (isOk ? 'successful' : 'failed') + ': ' + message];
+    },
+    count: (function() {
+      var counters = {};
+      return function console_saveHook_count(title) {
+        if (!title) {
+          //this is the *key* to counters, not the *value*
+          title = Math.floor((Math.random() * 100000) + 1).toString();
+        }
+        if (counters[title]) {
+          counters[title]++;
+        } else {
+          counters[title] = 1;
+        }
+        return title + ' ' + counters[title];
+      };
+    })(),
+    /*
+    //stringifyArguments/_source_of(argument)
+    //https://github.com/eriwen/javascript-stacktrace/blob/master/stacktrace.js#L272-L300
+    //https://github.com/NV/console.js/blob/gh-pages/console.js#L70-L131
+    dir: function console_saveHook_dir() {
+      var result = [];
+      for (var i = 0; i < arguments.length; i++) {
+        result.push(console._source_of(arguments[i], console.dimensions_limit, []));
+      }
+      return result.join(console._args_separator);
+    },
+    */
+    /*
+    //try to glean something from jsperf:
+    profile: function console_saveHook_profile() {
+    },
+    profileEnd: function console_saveHook_profileEnd() {
+    },
+    */
+    time: function console_saveHook_time(name) {
+      if (name === undefined) {
+        throw new Error('console.time needs a title for your timing like console.time(\'lookup\')');
+      }
+      startTimes[name] = now();
+      return [name];
+    },
+    timeEnd: function console_saveHook_timeEnd(name) {
+      return [(name + ': ' + (now() - startTimes[name]) + 'ms')];
+    },
+    timeStamp: function console_saveHook_timeStamp(optionalLabel) {
+      return [now(), optionalLabel];
+    },
+    trace: function console_saveHook_trace() {
+      return [/*counter?*/ (new Error('console.trace()')).stack || 'stack traces not supported'];
     }
   };
 
