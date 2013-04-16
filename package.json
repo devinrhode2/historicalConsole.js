@@ -1,4 +1,5 @@
 {
   "name": "historical-console",
+  "version": "0.0.3",
   "main": "historicalConsole.js"
 }
