@@ -83,35 +83,33 @@ if (typeof window !== 'undefined' && window.ie == null) {
     };
   }
 
-  var now = (Date.now ? (function(){ return Date.now(); }) : (function(){ return new Date().getTime; }));
+  var now = ( Date.now ? Date.now : (function(){ return new Date().getTime; }) );
 
   //Instead of of continually changing the structure of historicalConsole with each method,
   //we'll assign one static method hash to the prototype! (fast for interpreters)
   //We add these methods to parent historicalConsole object since it's common among every instantiated console
-  historicalConsole.prototype = {
-    resolveFunctionName: function historicalConsole_resolveFunctionName(func) {
-      if (!func) {
-        return 'null'; //null is when there is not caller (global scope)
-      }
-      var toString = func.toString()
-                      .substring(0, 250) //so the regex doesn't become a performance hog
-                      .replace(/\s+/g, ' ');
-      //collapse excess whitespace so function snippits for
-      //non-named functions are more much more informative
-
-      if (window.ie) {
-        func.name = toString
-                       //all chars be 'function' and '(' (if there are no chars, then '')
-                      .substring(8, toString.indexOf('(', 8)) 
-                      .replace(/^\s+|\s+$/g,''); //'function (){' => ' ' becomes the falsey ''
-      }
-      return func.name || toString.substring(0, internalOptions.functionSnippetLength);
-    },
-    noConflict: function historicalConsole_noConflict() {
-      window.historicalConsole = _oldHistoricalConsole;
-      trackAction('noConflict');
-      return historicalConsole;
+  historicalConsole.resolveFunctionName = function historicalConsole_resolveFunctionName(func) {
+    if (!func) {
+      return 'null'; //null is when there is not caller (global scope)
     }
+    var toString = func.toString()
+                    .substring(0, 250) //so the regex doesn't become a performance hog
+                    .replace(/\s+/g, ' ');
+    //collapse excess whitespace so function snippits for
+    //non-named functions are more much more informative
+
+    if (window.ie) {
+      func.name = toString
+                     //all chars be 'function' and '(' (if there are no chars, then '')
+                    .substring(8, toString.indexOf('(', 8)) 
+                    .replace(/^\s+|\s+$/g,''); //'function (){' => ' ' becomes the falsey ''
+    }
+    return func.name || toString.substring(0, internalOptions.functionSnippetLength);
+  };
+  historicalConsole.noConflict = function historicalConsole_noConflict() {
+    window.historicalConsole = _oldHistoricalConsole;
+    trackAction('noConflict');
+    return historicalConsole;
   };
 
   historicalConsole.saveHooks = {
