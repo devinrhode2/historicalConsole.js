@@ -11,7 +11,7 @@ historicalConsole(function(console) {
 })();
 ```
 
-The resulting console.history:
+The resulting console.history array:
 ```javascript
 [
  ['debug', {fooObj: 'O'}, 'asdf', 'caller:function(console) { console.debug(foo, '],
