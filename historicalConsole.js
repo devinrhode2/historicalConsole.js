@@ -3,30 +3,27 @@
  Docs: github.com/devinrhode2/historicalConsole.js
 */
 
+(function historicalConsoleJS(window, undef) {
+// Can't 'use strict' because we use Function.caller
 
-//a few global things:
-//typeof window in case we're in node.
-//==null because it could be falsey zero
-if (typeof window !== 'undefined' && window.ie == null) {
-  window.ie = (function() {
-    /*jshint boss:true, asi: true, expr: true, latedef: true */
-    var undef,
-        v = 3,
-        div = document.createElement('div'),
-        all = div.getElementsByTagName('i');
-
-    while (
-      div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
-      all[0]
-    ){}
-
-    return v > 4 ? v : undef;
-  }());
-}
-
-(function historicalConsoleJS(window, undefined) {
-// Can't do this because we use Function.caller
-//'use strict';
+  //typeof window in case we're in node.
+  //==null because it could be falsey zero
+  if (typeof window !== 'undefined' && window.ie == null) {
+    window.ie = (function() {
+      /*jshint boss:true, asi: true, expr: true, latedef: true */
+      var undef,
+          v = 3,
+          div = document.createElement('div'),
+          all = div.getElementsByTagName('i');
+  
+      while (
+        div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+        all[0]
+      ){}
+  
+      return v > 4 ? v : undef;
+    }());
+  }
 
   var _oldHistoricalConsole = window.historicalConsole;
   window.historicalConsole = historicalConsole;
