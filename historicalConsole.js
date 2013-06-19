@@ -8,7 +8,7 @@
 
   //typeof window in case we're in node.
   //==null because it could be falsey zero
-  if (typeof window !== 'undefined' && window.ie == null) {
+  if (typeof window !== 'undefined' && window.ie === undef) {
     window.ie = (function() {
       /*jshint boss:true, asi: true, expr: true, latedef: true */
       var undef,
