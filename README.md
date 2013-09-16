@@ -75,3 +75,7 @@ TODO:
 
 Other functions are exposed on the log object for your flexibility,
 if you want to understand and use these, read over the fully commented source below
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/devinrhode2/historicalconsole.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
