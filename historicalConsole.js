@@ -203,11 +203,11 @@
             //try to addCaller - separate from above because it may not succeed
             args.push('caller:' + historicalConsole.resolveFunctionName(arguments.callee.caller));
           } catch (e) {
-            internalOptions.addCaller = false;
             console.warn(
               'SOMEBODY made a global \'use strict\'; statement. ' +
               'The caller cannot be included in history for log calls in strict mode. Turning feature off'
             );
+            internalOptions.addCaller = false;
           }
         }
   
@@ -279,6 +279,7 @@
 
   //can't put this in method list because I don't know a clean way to pass in window.alert
   // this.alert
+  // (this is not actually a console method, just a clean place to store a window.alert override without overriding)
   console.alert = console.generateConsoleMethod('alert', window.alert, function console_alert_saveHook(message) {
     if (typeof onuncaughtException !== 'undefined') {
       onuncaughtException(new Error(message));
